@@ -330,18 +330,21 @@ show_main_menu() {
     main_opt=${main_opt:-1}
 
     if [ "$main_opt" == "2" ]; then
-        if [ ! -f "artisan" ]; then
+        if [ -f "artisan" ]; then
+            log_ok "Project Laravel terdeteksi di folder ini."
+        else
             log_info "Mencari project Laravel di subfolder..."
             
-            # Find subdirectories with artisan file (max depth 2 for performance)
+            # Find subdirectories with artisan file (max depth 3 for better reach)
             local projects=()
             while IFS= read -r project; do
-                projects+=("$project")
-            done < <(find . -maxdepth 2 -name artisan 2>/dev/null | sed 's/\/artisan//' | sed 's/^\.\///')
+                [ -n "$project" ] && projects+=("$project")
+            done < <(find . -maxdepth 3 -name artisan 2>/dev/null | sed 's/\/artisan//' | sed 's/^\.\///' | grep -v '^\.$')
             
             if [ ${#projects[@]} -eq 0 ]; then
                 log_fail "Error: Tidak ada project Laravel ditemukan di folder ini atau subfolder."
-                exit 1
+                log_info "Pastikan Anda berada di root project Laravel atau satu level di atasnya."
+                return 1
             fi
             
             printf "\n${BOLD}Ditemukan beberapa project, pilih salah satu:${RESET}\n"
@@ -351,17 +354,17 @@ show_main_menu() {
             printf "[q] Batal\n"
             
             read -r -p "Pilihan: " proj_opt < /dev/tty
-            if [[ "$proj_opt" == "q" ]]; then exit 0; fi
+            if [[ "$proj_opt" == "q" ]]; then return 1; fi
 
             if ! [[ "$proj_opt" =~ ^[0-9]+$ ]] || [ "$proj_opt" -lt 1 ] || [ "$proj_opt" -gt "${#projects[@]}" ]; then
                 log_fail "Pilihan tidak valid."
-                exit 1
+                return 1
             fi
             
             local selected_proj=${projects[$((proj_opt-1))]:-""}
             if [ -z "$selected_proj" ]; then
                 log_fail "Pilihan tidak valid."
-                exit 1
+                return 1
             fi
             
             cd "$selected_proj"
