@@ -368,15 +368,12 @@ show_main_menu() {
             log_ok "Berpindah ke project: $selected_proj"
         fi
         
-        # Setup helpers if missing
-        if [ ! -f "app/Traits/HasUuid.php" ]; then
-            printf "\n"
-            if prompt_yes_no "API Helpers & UUID Trait belum ada. Install sekarang?" "y"; then
-                setup_uuid_and_helpers
-            fi
+        # Skip API Helpers & UUID Trait check as per user request
+        
+        if ! run_crud_generator "y"; then
+            return 1
         fi
-
-        run_crud_generator
+        
         log_ok "Proses CRUD Selesai."
         exit 0
     fi
@@ -1250,6 +1247,7 @@ EOF
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 run_crud_generator() {
+    local auto_confirm=${1:-"n"}
     if [[ "$MODE" == "quick" ]]; then return 0; fi
 
     if [[ "$MODE" == "no-interaction" ]]; then
@@ -1265,7 +1263,12 @@ run_crud_generator() {
         while true; do
             printf "\n${BOLD}CRUD Generator:${RESET}\n"
             printf "${GREY}(Ketik 'back' untuk kembali ke instalasi, 'skip' untuk lewat)${RESET}\n"
-            read -r -p "Generate a CRUD now? (y/n/back/skip) [n]: " crud_opt < /dev/tty || crud_opt="skip"
+            
+            if [[ "$auto_confirm" =~ ^[Yy]$ ]]; then
+                crud_opt="y"
+            else
+                read -r -p "Generate a CRUD now? (y/n/back/skip) [n]: " crud_opt < /dev/tty || crud_opt="skip"
+            fi
             
             if [[ "$crud_opt" == "back" ]]; then return 1; fi
             if [[ "$crud_opt" == "skip" || ! "$crud_opt" =~ ^[Yy]$ ]]; then return 0; fi
