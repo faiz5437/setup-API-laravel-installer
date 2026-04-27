@@ -25,19 +25,22 @@
 
 ## 🚀 Cara Instalasi (Magic Command)
 
-Anda bisa langsung menjalankan LaraNova tanpa perlu download manual:
+Gunakan perintah ini untuk menjalankan LaraNova secara interaktif:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/faiz5437/setup-API-laravel-installer/main/laravel-installer.sh | bash
+bash <(curl -sSL https://raw.githubusercontent.com/faiz5437/setup-API-laravel-installer/main/laravel-installer.sh)
 ```
+
+> [!TIP]
+> **Mengapa menggunakan `bash <(...)`?**  
+> Metode ini memastikan `stdin` tetap terhubung ke terminal Anda, sehingga fitur interaktif (input keyboard) berfungsi 100% lancar 
 
 ### 🛠️ Opsi Perintah
 
 | Perintah | Deskripsi |
 | :--- | :--- |
-| `./laravel-installer.sh` | **Interactive Mode**: Wizard langkah-demi-langkah (Direkomendasikan) |
-| `./laravel-installer.sh --quick` | **Quick Mode**: Install kilat dengan best-practice default |
-| `./laravel-installer.sh --help` | Menampilkan bantuan & daftar environment variables |
+| `bash <(curl ...) --quick` | Install kilat dengan best-practice default |
+| `bash <(curl ...) --help` | Menampilkan bantuan & daftar environment variables |
 
 ---
 

@@ -62,7 +62,7 @@ prompt_with_default() {
     local default=$2
     local input=""
 
-    read -r -p "$prompt [$default]: " input
+    read -r -p "$prompt [$default]: " input < /dev/tty
     printf "%s" "${input:-$default}"
 }
 
@@ -73,7 +73,7 @@ prompt_secret_with_default() {
     local hint=""
 
     [ -n "$default" ] && hint="keep current"
-    read -r -s -p "$prompt [$hint]: " input
+    read -r -s -p "$prompt [$hint]: " input < /dev/tty
     printf "\n" >&2
     printf "%s" "${input:-$default}"
 }
@@ -87,7 +87,7 @@ prompt_yes_no() {
     [[ "$default" =~ ^[Yy]$ ]] && label="[Y/n]"
     [[ "$default" =~ ^[Nn]$ ]] && label="[y/N]"
 
-    read -r -p "$prompt $label: " input
+    read -r -p "$prompt $label: " input < /dev/tty
     input=${input:-$default}
     [[ "$input" =~ ^[Yy]$ ]]
 }
@@ -326,7 +326,7 @@ show_main_menu() {
     printf "\n${BOLD}Apa yang ingin Anda lakukan?${RESET}\n"
     printf "[1] Install Laravel Baru (Full Setup)\n"
     printf "[2] Generate CRUD Baru (di Project Existing)\n"
-    read -r -p "Pilihan [1]: " main_opt
+    read -r -p "Pilihan [1]: " main_opt < /dev/tty || main_opt="1"
     main_opt=${main_opt:-1}
 
     if [ "$main_opt" == "2" ]; then
@@ -350,7 +350,7 @@ show_main_menu() {
             done
             printf "[q] Batal\n"
             
-            read -r -p "Pilihan: " proj_opt
+            read -r -p "Pilihan: " proj_opt < /dev/tty
             if [[ "$proj_opt" == "q" ]]; then exit 0; fi
 
             if ! [[ "$proj_opt" =~ ^[0-9]+$ ]] || [ "$proj_opt" -lt 1 ] || [ "$proj_opt" -gt "${#projects[@]}" ]; then
@@ -499,14 +499,14 @@ select_version() {
     echo "[2] Laravel 11.x"
     echo "[3] Laravel 12.x (latest)"
     echo "[4] Custom Composer constraint"
-    read -r -p "Option [3]: " ver_opt
+    read -r -p "Option [3]: " ver_opt < /dev/tty || ver_opt="3"
     ver_opt=${ver_opt:-3}
 
     case $ver_opt in
         1) LARAVEL_VERSION="10.*" ;;
         2) LARAVEL_VERSION="11.*" ;;
         3) LARAVEL_VERSION="latest" ;;
-        4) read -r -p "Constraint (example: 12.*): " LARAVEL_VERSION
+        4) read -r -p "Constraint (example: 12.*): " LARAVEL_VERSION < /dev/tty
            LARAVEL_VERSION=${LARAVEL_VERSION:-latest}
            ;;
         *) LARAVEL_VERSION="latest" ;;
@@ -525,7 +525,7 @@ select_project_dir() {
 
     printf "\n${BOLD}Project Configuration:${RESET}\n"
     printf "${GREY}(Ketik 'back' untuk kembali ke versi)${RESET}\n"
-    read -r -p "Enter Project Name (folder name) [laravel-app]: " folder_name
+    read -r -p "Enter Project Name (folder name) [laravel-app]: " folder_name < /dev/tty || folder_name="laravel-app"
     
     if [[ "$folder_name" == "back" ]]; then return 1; fi
     
@@ -1265,15 +1265,15 @@ run_crud_generator() {
         while true; do
             printf "\n${BOLD}CRUD Generator:${RESET}\n"
             printf "${GREY}(Ketik 'back' untuk kembali ke instalasi, 'skip' untuk lewat)${RESET}\n"
-            read -r -p "Generate a CRUD now? (y/n/back/skip) [n]: " crud_opt
+            read -r -p "Generate a CRUD now? (y/n/back/skip) [n]: " crud_opt < /dev/tty || crud_opt="skip"
             
             if [[ "$crud_opt" == "back" ]]; then return 1; fi
             if [[ "$crud_opt" == "skip" || ! "$crud_opt" =~ ^[Yy]$ ]]; then return 0; fi
 
-            read -r -p "Model Name (e.g. Product): " model_name
-            read -r -p "Table Name (e.g. products): " table_name
+            read -r -p "Model Name (e.g. Product): " model_name < /dev/tty
+            read -r -p "Table Name (e.g. products): " table_name < /dev/tty
             printf "${GREY}Fields (format: name:string,price:integer,user_id:foreign:users)${RESET}\n"
-            read -r -p "Fields: " fields
+            read -r -p "Fields: " fields < /dev/tty
 
             if ! validate_crud_input "$model_name" "$table_name" "$fields"; then
                 log_fail "$CRUD_VALIDATION_ERROR"
@@ -1286,7 +1286,7 @@ run_crud_generator() {
             echo "Model : $model_name"
             echo "Table : $table_name"
             echo "Fields: $fields"
-            read -r -p "Apakah data ini sudah benar? (y/retry/back): " confirm
+            read -r -p "Apakah data ini sudah benar? (y/retry/back): " confirm < /dev/tty
             
             if [[ "$confirm" == "back" ]]; then return 1; fi
             if [[ "$confirm" =~ ^[Yy]$ ]]; then break; fi
