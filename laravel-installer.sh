@@ -1635,7 +1635,7 @@ generate_postman_collection() {
 								"exec": [
 									"var jsonData = pm.response.json();",
 									"if (jsonData.data && jsonData.data.token) {",
-									"    pm.environment.set(\"token\", jsonData.data.token);",
+									"    pm.collectionVariables.set(\"token\", jsonData.data.token);",
 									"}"
 								],
 								"type": "text/javascript"
