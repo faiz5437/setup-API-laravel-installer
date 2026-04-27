@@ -1451,9 +1451,13 @@ EOF
     
     # Add Import to api.php
     if ! grep -q "${model_name}Controller" routes/api.php; then
-        sed -i '' "1a\\
-use App\\\\Http\\\\Controllers\\\\Api\\\\${model_name}Controller;" routes/api.php 2>/dev/null || \
-        sed -i "1a use App\\Http\\Controllers\\Api\\${model_name}Controller;" routes/api.php
+        if [[ "$OS_TYPE" == "Mac" ]]; then
+            sed -i '' "1a\\
+use App\\\\Http\\\\Controllers\\\\Api\\\\${model_name}Controller;
+" routes/api.php
+        else
+            sed -i "1a use App\\\\Http\\\\Controllers\\\\Api\\\\${model_name}Controller;" routes/api.php
+        fi
     fi
 
     local route_marker="FAIZ_INSTALLER_CRUD_${table_name}_ROUTES_START"
@@ -1466,23 +1470,6 @@ use App\\\\Http\\\\Controllers\\\\Api\\\\${model_name}Controller;" routes/api.ph
             printf "// FAIZ_INSTALLER_CRUD_%s_ROUTES_END\n" "$table_name"
         } >> routes/api.php
     fi
-
-    # NEW: Add API JSON Response for root route
-    log_info "Setting up API root response..."
-    cat > routes/web.php <<EOF
-<?php
-
-use Illuminate\Support\Facades\Route;
-
-Route::get('/', function () {
-    return response()->json([
-        'app' => 'Laravel API',
-        'status' => 'Running',
-        'author' => 'Faiz Auto-Installer'
-    ]);
-});
-EOF
-    log_ok "API root response ready."
 
     log_ok "CRUD for $model_name generated successfully with full API logic."
 }
