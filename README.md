@@ -5,6 +5,7 @@
 
 **LaraNova API Engine** adalah bash script premium yang dirancang khusus untuk membangun **Pure Laravel API** dengan standar industri tertinggi (*Best Practices*). Lupakan konfigurasi manual yang membosankan—LaraNova menangani segalanya untuk Anda.
 
+![LaraNova](https://github.com/faiz5437/setup-API-laravel-installer/assets/75693797/8a89c14d-15e2-4f1e-8cc7-34d63d872b3a)
 ---
 
 ## 🔥 Fitur Unggulan
